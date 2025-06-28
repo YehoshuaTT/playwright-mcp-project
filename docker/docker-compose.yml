@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  playwright-mcp:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: playwright-mcp-server
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HEADLESS=true
+    volumes:
+      - ../screenshots:/app/screenshots
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - playwright-network
+
+networks:
+  playwright-network:
+    driver: bridge
